@@ -1,6 +1,6 @@
 {
   "name": "@mitumba/logistics",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Asset-light carrier-orchestration SDK — carrier-neutral headless client for Kenyan couriers. Zero UI, zero carrier knowledge.",
   "license": "MIT",
   "repository": {
@@ -49,7 +49,7 @@
     "clean": "rimraf dist .turbo"
   },
   "dependencies": {
-    "@mitumba/logistics-contract": "0.0.0"
+    "@mitumba/logistics-contract": "0.1.0"
   },
   "devDependencies": {
     "rimraf": "^6.0.1",
