@@ -1,0 +1,85 @@
+name: Bootstrap Publish (one-time)
+
+# One-time bootstrap to CREATE the packages on npm for the first time.
+#
+# Why this exists: npm OIDC Trusted Publishing (used by publish.yml) cannot
+# create a brand-new package — the Trusted Publisher connection is configured on
+# an EXISTING package. So the very first version of each package must be pushed
+# with a token. This workflow does exactly that, once, using the org-level
+# NPM_TOKEN secret, then is never needed again:
+#
+#   1. Run this workflow manually (Actions tab -> Bootstrap Publish -> Run).
+#   2. It publishes each package at its current 0.0.0 in dependency order.
+#   3. On npmjs.com, configure the Trusted Publisher on each package to point at
+#      this repo's publish.yml (Settings -> Trusted Publisher).
+#   4. Merge the "Version Packages" PR; publish.yml then releases 0.1.0 tokenless.
+#
+# After step 3 this workflow should be deleted — publishing is OIDC-only from
+# then on, per AGENTS.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "bootstrap" to confirm a one-time token publish of 0.0.0'
+        required: true
+        default: ''
+
+concurrency: ${{ github.workflow }}
+
+permissions:
+  contents: read
+
+jobs:
+  bootstrap:
+    if: ${{ github.event.inputs.confirm == 'bootstrap' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Build all packages
+        run: npm run build
+
+      # Publish in dependency order: contract -> core -> react -> native. Each is
+      # at 0.0.0; --access public creates the scoped package.
+      #
+      # Provenance is DISABLED here (NPM_CONFIG_PROVENANCE=false + no id-token):
+      # provenance requires OIDC, but this bootstrap uses a token. The real
+      # releases via publish.yml are OIDC and DO carry provenance. A package that
+      # already exists at 0.0.0 will error, which correctly signals the bootstrap
+      # already ran.
+      - name: Publish @mitumba/logistics-contract
+        working-directory: packages/contract
+        run: npm publish --access public --no-provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: 'false'
+
+      - name: Publish @mitumba/logistics
+        working-directory: packages/core
+        run: npm publish --access public --no-provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: 'false'
+
+      - name: Publish @mitumba/logistics-react
+        working-directory: packages/react
+        run: npm publish --access public --no-provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: 'false'
+
+      - name: Publish @mitumba/logistics-native
+        working-directory: packages/native
+        run: npm publish --access public --no-provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: 'false'
