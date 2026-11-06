@@ -7,21 +7,13 @@ import {
   type UseDeliveryQuoteOptions,
   type UseParcelTrackingOptions,
 } from './hooks'
+import { formatMoney } from './formatMoney'
 
 /**
  * Unstyled React Native view primitives. They render RN structure and text only
  * — the host app styles them via the optional `style` props to match its
  * surface. Hosts wanting full control can use the hooks directly. No WebView.
  */
-
-function formatMoney(amount: { currency: string; minor_units: number }): string {
-  const major = amount.minor_units / 100
-  try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: amount.currency }).format(major)
-  } catch {
-    return `${amount.currency} ${major.toFixed(2)}`
-  }
-}
 
 export interface DeliveryQuoteLineProps extends UseDeliveryQuoteOptions {
   style?: Record<string, unknown>
