@@ -7,7 +7,7 @@ import {
   type QuoteRequest,
   type QuoteOption,
   type ParcelView,
-} from '@mitumba/logistics'
+} from '@mitumbadotafrica/logistics'
 
 /**
  * Headless hooks for React Native. Identical in behaviour to the web hooks but

@@ -1,4 +1,4 @@
-import type { LogisticsErrorBody } from '@mitumba/logistics-contract'
+import type { LogisticsErrorBody } from '@mitumbadotafrica/logistics-contract'
 
 /**
  * Thrown for any non-2xx API response and for network/transport failures.

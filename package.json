@@ -1,5 +1,5 @@
 {
-  "name": "@mitumba/logistics-monorepo",
+  "name": "@mitumbadotafrica/logistics-monorepo",
   "version": "0.0.0",
   "private": true,
   "description": "Mitumba Logistics — asset-light carrier-orchestration SDK. Method-vs-carrier, provider-neutral client for Kenyan couriers.",

@@ -1,7 +1,7 @@
 {
-  "name": "@mitumba/logistics-native",
+  "name": "@mitumbadotafrica/logistics-native",
   "version": "0.0.0",
-  "description": "React Native views for Mitumba Logistics — native delivery quote, method picker, and parcel tracking over @mitumba/logistics. No WebView.",
+  "description": "React Native views for Mitumba Logistics — native delivery quote, method picker, and parcel tracking over @mitumbadotafrica/logistics. No WebView.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -44,7 +44,7 @@
     "react-native": ">=0.74.0"
   },
   "dependencies": {
-    "@mitumba/logistics": "0.0.0"
+    "@mitumbadotafrica/logistics": "0.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.5",

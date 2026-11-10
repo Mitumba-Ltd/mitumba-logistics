@@ -27,10 +27,10 @@ logistics sibling of [`mitumba-pay`](https://github.com/Mitumba-Ltd/mitumba-pay)
 
 | Package | npm | Description |
 |---|---|---|
-| `packages/contract` | `@mitumba/logistics-contract` | Wire contract: types + zod schemas + version. Source of truth. |
-| `packages/core` | `@mitumba/logistics` | Headless client + state machine (planned) |
-| `packages/react` | `@mitumba/logistics-react` | Embedded web views (planned) |
-| `packages/native` | `@mitumba/logistics-native` | React Native views (planned) |
+| `packages/contract` | `@mitumbadotafrica/logistics-contract` | Wire contract: types + zod schemas + version. Source of truth. |
+| `packages/core` | `@mitumbadotafrica/logistics` | Headless client + state machine (planned) |
+| `packages/react` | `@mitumbadotafrica/logistics-react` | Embedded web views (planned) |
+| `packages/native` | `@mitumbadotafrica/logistics-native` | React Native views (planned) |
 
 ## Development
 

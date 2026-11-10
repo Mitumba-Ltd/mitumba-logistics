@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react'
-import type { ParcelView, QuoteOption } from '@mitumba/logistics'
+import type { ParcelView, QuoteOption } from '@mitumbadotafrica/logistics'
 import { useDeliveryQuote, type UseDeliveryQuoteOptions } from './useDeliveryQuote'
 import { useParcelTracking, type UseParcelTrackingOptions } from './useParcelTracking'
 

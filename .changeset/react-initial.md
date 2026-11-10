@@ -1,5 +1,5 @@
 ---
-'@mitumba/logistics-react': minor
+'@mitumbadotafrica/logistics-react': minor
 ---
 
 Initial release of the embedded React views: the useDeliveryQuote and

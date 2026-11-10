@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { MitumbaLogistics } from './client'
 import { LogisticsError } from './errors'
 import { pollParcel } from './polling'
-import type { ParcelView } from '@mitumba/logistics-contract'
+import type { ParcelView } from '@mitumbadotafrica/logistics-contract'
 
 function jsonResponse(status: number, body: unknown): Response {
   return {

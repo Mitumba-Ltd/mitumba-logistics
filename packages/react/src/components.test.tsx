@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { render, screen, waitFor, cleanup } from '@testing-library/react'
-import { MitumbaLogistics, type QuoteResponse, type ParcelView } from '@mitumba/logistics'
+import { MitumbaLogistics, type QuoteResponse, type ParcelView } from '@mitumbadotafrica/logistics'
 import { DeliveryQuoteLine, ParcelTrackingView } from './components'
 
 afterEach(cleanup)

@@ -1,5 +1,5 @@
 ---
-'@mitumba/logistics-contract': minor
+'@mitumbadotafrica/logistics-contract': minor
 ---
 
 Initial release of the Mitumba Logistics wire contract: carrier-neutral types and

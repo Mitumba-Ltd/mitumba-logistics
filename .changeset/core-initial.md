@@ -1,5 +1,5 @@
 ---
-'@mitumba/logistics': minor
+'@mitumbadotafrica/logistics': minor
 ---
 
 Initial release of the headless, carrier-neutral logistics client:

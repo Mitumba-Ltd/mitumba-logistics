@@ -1,7 +1,7 @@
 /**
- * @mitumba/logistics — headless, carrier-neutral logistics client.
+ * @mitumbadotafrica/logistics — headless, carrier-neutral logistics client.
  *
- * Knows the shape of requests/responses (via @mitumba/logistics-contract) and
+ * Knows the shape of requests/responses (via @mitumbadotafrica/logistics-contract) and
  * nothing about how parcels are booked, routed, or tracked. No carrier
  * implementations, no secrets.
  */
@@ -15,4 +15,4 @@ export { pollParcel } from './polling'
 export type { PollParcelOptions } from './polling'
 
 // Re-export the wire contract for convenience so consumers need one import.
-export * from '@mitumba/logistics-contract'
+export * from '@mitumbadotafrica/logistics-contract'

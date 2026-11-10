@@ -1,5 +1,5 @@
 ---
-'@mitumba/logistics-native': minor
+'@mitumbadotafrica/logistics-native': minor
 ---
 
 Initial release of the embedded React Native views: the useDeliveryQuote and
