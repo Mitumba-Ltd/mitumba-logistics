@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react'
 import { View, Text, Pressable, ActivityIndicator, Linking } from 'react-native'
-import type { ParcelView, QuoteOption } from '@mitumba/logistics'
+import type { ParcelView, QuoteOption } from '@mitumbadotafrica/logistics'
 import {
   useDeliveryQuote,
   useParcelTracking,

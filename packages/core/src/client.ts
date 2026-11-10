@@ -4,7 +4,7 @@ import type {
   QuoteResponse,
   CreateParcelResponse,
   ParcelView,
-} from '@mitumba/logistics-contract'
+} from '@mitumbadotafrica/logistics-contract'
 import { HttpClient } from './http'
 import type { MitumbaLogisticsConfig, RequestOptions } from './config'
 
@@ -31,7 +31,7 @@ export interface ShipmentPartyInput {
 
 /**
  * The headless, carrier-neutral Mitumba Logistics client. Knows the shape of the
- * HTTP contract (via @mitumba/logistics-contract) and nothing about how parcels
+ * HTTP contract (via @mitumbadotafrica/logistics-contract) and nothing about how parcels
  * are booked, routed, or tracked. No carrier implementations, no secrets.
  *
  * The buyer picks a fulfilment METHOD in {@link quote}; the backend chooses the

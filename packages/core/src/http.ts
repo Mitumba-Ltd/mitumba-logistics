@@ -1,4 +1,4 @@
-import type { LogisticsErrorBody } from '@mitumba/logistics-contract'
+import type { LogisticsErrorBody } from '@mitumbadotafrica/logistics-contract'
 import { LogisticsError } from './errors'
 import { DEFAULT_BASE_URL, type MitumbaLogisticsConfig, type RequestOptions } from './config'
 

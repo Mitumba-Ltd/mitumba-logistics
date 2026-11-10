@@ -1,5 +1,5 @@
 /**
- * @mitumba/logistics-contract
+ * @mitumbadotafrica/logistics-contract
  *
  * The single source of truth for the Mitumba Logistics wire contract: types +
  * zod schemas + the contract version constant. Carrier-neutral by design.

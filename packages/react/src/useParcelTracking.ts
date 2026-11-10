@@ -5,7 +5,7 @@ import {
   LogisticsError,
   isTerminalParcelStatus,
   type ParcelView,
-} from '@mitumba/logistics'
+} from '@mitumbadotafrica/logistics'
 
 /**
  * Headless hook that tracks a parcel for inline rendering in the buyer's order

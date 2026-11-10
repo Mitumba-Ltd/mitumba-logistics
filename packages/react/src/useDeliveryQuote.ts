@@ -4,7 +4,7 @@ import {
   LogisticsError,
   type QuoteRequest,
   type QuoteOption,
-} from '@mitumba/logistics'
+} from '@mitumbadotafrica/logistics'
 
 /**
  * Headless hook that fetches a delivery quote for a chosen fulfilment method and

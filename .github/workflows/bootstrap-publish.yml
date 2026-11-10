@@ -56,28 +56,28 @@ jobs:
       # releases via publish.yml are OIDC and DO carry provenance. A package that
       # already exists at 0.0.0 will error, which correctly signals the bootstrap
       # already ran.
-      - name: Publish @mitumba/logistics-contract
+      - name: Publish @mitumbadotafrica/logistics-contract
         working-directory: packages/contract
         run: npm publish --access public --no-provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: 'false'
 
-      - name: Publish @mitumba/logistics
+      - name: Publish @mitumbadotafrica/logistics
         working-directory: packages/core
         run: npm publish --access public --no-provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: 'false'
 
-      - name: Publish @mitumba/logistics-react
+      - name: Publish @mitumbadotafrica/logistics-react
         working-directory: packages/react
         run: npm publish --access public --no-provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: 'false'
 
-      - name: Publish @mitumba/logistics-native
+      - name: Publish @mitumbadotafrica/logistics-native
         working-directory: packages/native
         run: npm publish --access public --no-provenance
         env:

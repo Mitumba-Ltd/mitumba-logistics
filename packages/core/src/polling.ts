@@ -1,4 +1,4 @@
-import { isTerminalParcelStatus, type ParcelView } from '@mitumba/logistics-contract'
+import { isTerminalParcelStatus, type ParcelView } from '@mitumbadotafrica/logistics-contract'
 import type { RequestOptions } from './config'
 import type { MitumbaLogistics } from './client'
 

@@ -33,12 +33,12 @@ repo talks to that engine's HTTP API. It is the logistics sibling of
 
 ## Structure
 
-- `packages/contract` → `@mitumba/logistics-contract` — types + zod + version
+- `packages/contract` → `@mitumbadotafrica/logistics-contract` — types + zod + version
   (source of truth)
-- `packages/core` → `@mitumba/logistics` — headless client + state machine +
+- `packages/core` → `@mitumbadotafrica/logistics` — headless client + state machine +
   polling (planned)
-- `packages/react` → `@mitumba/logistics-react` — embedded web views (planned)
-- `packages/native` → `@mitumba/logistics-native` — RN views (planned)
+- `packages/react` → `@mitumbadotafrica/logistics-react` — embedded web views (planned)
+- `packages/native` → `@mitumbadotafrica/logistics-native` — RN views (planned)
 - `apps/*` — private, unpublished
 
 ## Workflow

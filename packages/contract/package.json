@@ -1,5 +1,5 @@
 {
-  "name": "@mitumba/logistics-contract",
+  "name": "@mitumbadotafrica/logistics-contract",
   "version": "0.0.0",
   "description": "Wire contract (types + zod schemas) for the Mitumba Logistics HTTP API. Carrier-neutral. Zero backend knowledge.",
   "license": "MIT",
