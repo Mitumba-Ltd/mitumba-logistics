@@ -12,5 +12,10 @@ export type { UseParcelTrackingOptions, UseParcelTrackingState } from './useParc
 export { DeliveryQuoteLine, ParcelTrackingView } from './components'
 export type { DeliveryQuoteLineProps, ParcelTrackingViewProps } from './components'
 
+export { useBasketQuotes } from './useBasketQuotes'
+export type { UseBasketQuotesOptions, UseBasketQuotesState } from './useBasketQuotes'
+export { BasketDeliveryPicker, PickupHubPicker } from './delivery-picker'
+export type { BasketDeliveryPickerProps, PickupHubPickerProps } from './delivery-picker'
+
 // Re-export the client + contract so consumers need a single import.
 export * from '@mitumbadotafrica/logistics'

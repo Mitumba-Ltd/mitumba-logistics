@@ -13,6 +13,15 @@ export { DEFAULT_BASE_URL } from './config'
 export type { MitumbaLogisticsConfig, RequestOptions } from './config'
 export { pollParcel } from './polling'
 export type { PollParcelOptions } from './polling'
+export {
+  checkoutDeliveries,
+  etaLabel,
+  isQuoteExpired,
+  methodChoices,
+  methodLabel,
+  unavailableLabel,
+} from './delivery'
+export type { CheckoutDelivery, CheckoutDeliveriesResult, MethodChoice } from './delivery'
 
 // Re-export the wire contract for convenience so consumers need one import.
 export * from '@mitumbadotafrica/logistics-contract'

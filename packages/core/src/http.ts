@@ -43,6 +43,11 @@ export class HttpClient {
     return this.request<T>('POST', path, body, options)
   }
 
+  /** PUT replaces a whole resource, so it is idempotent; it is still only retried on network errors. */
+  async put<T>(path: string, body: unknown, options?: RequestOptions): Promise<T> {
+    return this.request<T>('PUT', path, body, options)
+  }
+
   private async request<T>(
     method: string,
     path: string,

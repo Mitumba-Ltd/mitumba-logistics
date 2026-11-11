@@ -19,7 +19,7 @@ declare module 'react-native' {
     children?: ReactNode
     accessibilityRole?: string
     accessibilityLabel?: string
-    accessibilityState?: { busy?: boolean; disabled?: boolean; selected?: boolean }
+    accessibilityState?: { busy?: boolean; disabled?: boolean; selected?: boolean; checked?: boolean | 'mixed' }
     accessibilityLiveRegion?: 'none' | 'polite' | 'assertive'
     testID?: string
   }
