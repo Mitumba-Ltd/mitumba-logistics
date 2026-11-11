@@ -1,9 +1,15 @@
 import type {
+  BasketQuoteRequest,
+  BasketQuoteResponse,
+  ListingPackage,
   MarketsResponse,
+  PackageSize,
   QuoteRequest,
   QuoteResponse,
   CreateParcelResponse,
   ParcelView,
+  StoreOrigin,
+  StoreOriginInput,
 } from '@mitumbadotafrica/logistics-contract'
 import { HttpClient } from './http'
 import type { MitumbaLogisticsConfig, RequestOptions } from './config'
@@ -71,5 +77,41 @@ export class MitumbaLogistics {
    */
   async getParcel(parcelId: string, options?: RequestOptions): Promise<ParcelView> {
     return this.http.get<ParcelView>(`/logistics/parcels/${encodeURIComponent(parcelId)}`, options)
+  }
+
+  /**
+   * Price each shop basket before any order exists. Origin is the shop (derived
+   * by the backend); destination is the buyer's saved address or a "Deliver to"
+   * point. Each available basket has one option per door method and one per
+   * nearby pickup hub; pass the picked option's `quote_id` per shop to checkout.
+   * An unservable basket comes back `unavailable` with a reason, not as an error.
+   * Requires the buyer's token.
+   */
+  async quoteBaskets(input: BasketQuoteRequest, options?: RequestOptions): Promise<BasketQuoteResponse> {
+    return this.http.post<BasketQuoteResponse>('/logistics/basket-quotes', input, options)
+  }
+
+  /** Seller: where a shop's parcels start. Fields are null until set. */
+  async getStoreOrigin(storeId: string, options?: RequestOptions): Promise<StoreOrigin> {
+    return this.http.get<StoreOrigin>(`/logistics/stores/${encodeURIComponent(storeId)}/origin`, options)
+  }
+
+  /** Seller: replace a shop's dispatch point. */
+  async setStoreOrigin(storeId: string, input: StoreOriginInput, options?: RequestOptions): Promise<StoreOrigin> {
+    return this.http.put<StoreOrigin>(`/logistics/stores/${encodeURIComponent(storeId)}/origin`, input, options)
+  }
+
+  /** Seller: a listing's package size, or its category default when unset. */
+  async getListingPackage(listingId: string, options?: RequestOptions): Promise<ListingPackage> {
+    return this.http.get<ListingPackage>(`/logistics/listings/${encodeURIComponent(listingId)}/package`, options)
+  }
+
+  /** Seller: set a listing's package size. */
+  async setListingPackage(listingId: string, packageSize: PackageSize, options?: RequestOptions): Promise<ListingPackage> {
+    return this.http.put<ListingPackage>(
+      `/logistics/listings/${encodeURIComponent(listingId)}/package`,
+      { package_size: packageSize },
+      options,
+    )
   }
 }
