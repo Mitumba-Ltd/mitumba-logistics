@@ -153,3 +153,30 @@ describe('pollParcel', () => {
     expect(client.getParcel).not.toHaveBeenCalled()
   })
 })
+
+describe('the default fetch', () => {
+  it('is called on the global object, as browsers and Workers require', async () => {
+    // A browser's fetch throws "Illegal invocation" unless it is called on the window.
+    const receivers: unknown[] = []
+    const strictFetch = vi.fn(function (this: unknown) {
+      receivers.push(this)
+      if (this !== undefined && this !== globalThis) throw new TypeError('Illegal invocation')
+      return Promise.resolve(jsonResponse(422, { error: 'no_route', reason: 'not_serviceable' }))
+    })
+    vi.stubGlobal('fetch', strictFetch)
+    try {
+      const client = new MitumbaLogistics({ maxRetries: 0 })
+      const request = {
+        market_code: 'KE',
+        destination: { type: 'address' as const, address_id: 'addr_1' },
+        baskets: [{ store_id: 'store_1', items: [{ listing_id: 'listing_1', quantity: 1 }] }],
+      }
+      // The request reached the server: its answer comes back, not a network error.
+      await expect(client.quoteBaskets(request)).rejects.toMatchObject({ code: 'no_route', status: 422 })
+      expect(strictFetch).toHaveBeenCalledTimes(1)
+      expect(receivers.every((receiver) => receiver === undefined || receiver === globalThis)).toBe(true)
+    } finally {
+      vi.unstubAllGlobals()
+    }
+  })
+})
