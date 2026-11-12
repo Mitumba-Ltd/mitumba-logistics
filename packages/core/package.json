@@ -1,6 +1,6 @@
 {
   "name": "@mitumbadotafrica/logistics",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Asset-light carrier-orchestration SDK — carrier-neutral headless client for Kenyan couriers. Zero UI, zero carrier knowledge.",
   "license": "MIT",
   "repository": {
