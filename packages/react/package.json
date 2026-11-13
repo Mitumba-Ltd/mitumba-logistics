@@ -1,6 +1,6 @@
 {
   "name": "@mitumbadotafrica/logistics-react",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "React views for Mitumba Logistics — embedded delivery quote, method picker, and parcel tracking over @mitumbadotafrica/logistics.",
   "license": "MIT",
   "repository": {
@@ -44,7 +44,7 @@
     "react-dom": ">=18.0.0"
   },
   "dependencies": {
-    "@mitumbadotafrica/logistics": "0.2.1"
+    "@mitumbadotafrica/logistics": "0.3.0"
   },
   "devDependencies": {
     "@testing-library/dom": "10.4.1",
