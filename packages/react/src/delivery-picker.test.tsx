@@ -44,7 +44,7 @@ describe('BasketDeliveryPicker', () => {
     expect(screen.getAllByRole('radio')).toHaveLength(3)
     expect(screen.getByText('Pickup point')).toBeDefined()
     expect(screen.getByText(/^from /)).toBeDefined()
-    expect(screen.getByText(/Same day/)).toBeDefined()
+    expect(screen.getByText(/Within 1 day/)).toBeDefined()
     expect(screen.getByText('via Uber Direct')).toBeDefined()
     // No hub list until a pickup method is chosen.
     expect(screen.queryByText('Choose a pickup point')).toBeNull()
@@ -91,6 +91,27 @@ describe('BasketDeliveryPicker', () => {
   it('shows the generic reason for an unavailable basket without a legend', () => {
     render(<BasketDeliveryPicker basket={{ store_id: 's', status: 'unavailable', options: [] }} value={null} onChange={() => {}} unavailableLabels={{ '': 'Nope' }} />)
     expect(screen.getByRole('status').textContent).toBe('Nope')
+  })
+  it('writes prices in whole units, and a method with one price without "from"', () => {
+    render(<Controlled />)
+    expect(screen.getByText(/^from KES 250$/)).toBeDefined()
+    expect(screen.getByText('KES 430')).toBeDefined()
+    expect(screen.getByText('KES 520')).toBeDefined()
+  })
+
+  it("takes the host's price formatter, also for the hubs, and can hide the carrier", () => {
+    render(
+      <BasketDeliveryPicker
+        basket={basket}
+        value="dq_h1"
+        onChange={() => {}}
+        showCarrier={false}
+        formatMoney={(amount) => `Sh ${amount.minor_units / 100}`}
+      />,
+    )
+    expect(screen.getByText('Sh 430')).toBeDefined()
+    expect(screen.getByText('Sh 270')).toBeDefined()
+    expect(screen.queryByText(/^via /)).toBeNull()
   })
 })
 
