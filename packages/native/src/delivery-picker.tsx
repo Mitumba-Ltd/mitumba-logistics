@@ -7,6 +7,7 @@ import {
   unavailableLabel,
   type BasketQuote,
   type BasketQuoteOption,
+  type Money,
 } from '@mitumbadotafrica/logistics'
 import { formatMoney } from './formatMoney'
 
@@ -30,10 +31,13 @@ export interface PickupHubPickerProps {
   textStyle?: Style
   selectedStyle?: Style
   renderHub?: (option: BasketQuoteOption, selected: boolean) => ReactNode
+  /** How prices are written; defaults to "KES 260". */
+  formatMoney?: (amount: Money) => string
 }
 
 export function PickupHubPicker(props: PickupHubPickerProps): ReactNode {
   const legend = props.legend ?? 'Choose a pickup point'
+  const format = props.formatMoney ?? formatMoney
   return (
     <View style={props.style} accessibilityRole="radiogroup" accessibilityLabel={legend}>
       <Text style={props.textStyle}>{legend}</Text>
@@ -45,7 +49,7 @@ export function PickupHubPicker(props: PickupHubPickerProps): ReactNode {
             key={option.quote_id}
             accessibilityRole="radio"
             accessibilityState={{ checked: selected }}
-            accessibilityLabel={`${hub?.name ?? ''}, ${hub?.address ?? ''}, ${formatMoney(option.price)}`}
+            accessibilityLabel={`${hub?.name ?? ''}, ${hub?.address ?? ''}, ${format(option.price)}`}
             onPress={() => props.onChange(option.quote_id)}
             {...(selected && props.selectedStyle ? { style: props.selectedStyle } : {})}
           >
@@ -54,7 +58,7 @@ export function PickupHubPicker(props: PickupHubPickerProps): ReactNode {
             ) : (
               <Text style={props.textStyle}>
                 {hub?.name} · {hub?.address}
-                {hub?.opening_hours ? ` · ${hub.opening_hours}` : ''} · {formatMoney(option.price)}
+                {hub?.opening_hours ? ` · ${hub.opening_hours}` : ''} · {format(option.price)}
               </Text>
             )}
           </Pressable>
@@ -76,6 +80,10 @@ export interface BasketDeliveryPickerProps {
   textStyle?: Style
   selectedStyle?: Style
   renderHub?: PickupHubPickerProps['renderHub']
+  /** How prices are written; defaults to "KES 260". */
+  formatMoney?: (amount: Money) => string
+  /** Show the partner's name ("via …") beside each method. Defaults to true. */
+  showCarrier?: boolean
 }
 
 /**
@@ -87,6 +95,7 @@ export function BasketDeliveryPicker(props: BasketDeliveryPickerProps): ReactNod
   const { basket } = props
   const choices = methodChoices(basket)
   const legend = props.legend ?? 'Delivery'
+  const format = props.formatMoney ?? formatMoney
 
   if (basket.status !== 'available' || choices.length === 0) {
     return (
@@ -103,7 +112,9 @@ export function BasketDeliveryPicker(props: BasketDeliveryPickerProps): ReactNod
       <Text style={props.textStyle}>{legend}</Text>
       {choices.map((choice) => {
         const selected = picked?.method === choice.method
-        const price = `${choice.options.length > 1 ? 'from ' : ''}${formatMoney(choice.cheapest.price)}`
+        const differs = choice.options.some((option) => option.price.minor_units !== choice.cheapest.price.minor_units)
+        const price = `${differs ? 'from ' : ''}${format(choice.cheapest.price)}`
+        const carrier = props.showCarrier === false ? '' : ` · via ${choice.cheapest.carrier_name}`
         const eta = choice.cheapest.eta ? ` · ${etaLabel(choice.cheapest.eta)}` : ''
         const label = methodLabel(choice.method, props.methodLabels)
         return (
@@ -111,13 +122,14 @@ export function BasketDeliveryPicker(props: BasketDeliveryPickerProps): ReactNod
             <Pressable
               accessibilityRole="radio"
               accessibilityState={{ checked: selected }}
-              accessibilityLabel={`${label}, ${price}${eta}, via ${choice.cheapest.carrier_name}`}
+              accessibilityLabel={`${label}, ${price}${eta.replace(' · ', ', ')}${carrier.replace(' · ', ', ')}`}
               onPress={() => props.onChange(choice.cheapest.quote_id)}
               {...(selected && props.selectedStyle ? { style: props.selectedStyle } : {})}
             >
               <Text style={props.textStyle}>
                 {label} · {price}
-                {eta} · via {choice.cheapest.carrier_name}
+                {eta}
+                {carrier}
               </Text>
             </Pressable>
             {selected && choice.needsHub ? (
@@ -127,6 +139,7 @@ export function BasketDeliveryPicker(props: BasketDeliveryPickerProps): ReactNod
                 onChange={props.onChange}
                 {...(props.textStyle ? { textStyle: props.textStyle } : {})}
                 {...(props.selectedStyle ? { selectedStyle: props.selectedStyle } : {})}
+                formatMoney={format}
                 {...(props.renderHub ? { renderHub: props.renderHub } : {})}
               />
             ) : null}
