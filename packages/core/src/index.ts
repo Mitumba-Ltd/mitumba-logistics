@@ -16,6 +16,7 @@ export type { PollParcelOptions } from './polling'
 export {
   checkoutDeliveries,
   etaLabel,
+  formatPrice,
   isQuoteExpired,
   methodChoices,
   methodLabel,
