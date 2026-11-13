@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react'
-import type { ParcelView, QuoteOption } from '@mitumbadotafrica/logistics'
+import { formatPrice, type Money, type ParcelView, type QuoteOption } from '@mitumbadotafrica/logistics'
 import { useDeliveryQuote, type UseDeliveryQuoteOptions } from './useDeliveryQuote'
 import { useParcelTracking, type UseParcelTrackingOptions } from './useParcelTracking'
 
@@ -10,16 +10,6 @@ import { useParcelTracking, type UseParcelTrackingOptions } from './useParcelTra
  * accessible defaults. Hosts that want full control can use the hooks directly.
  */
 
-/** Format a Money as a localised currency string. */
-function formatMoney(amount: { currency: string; minor_units: number }): string {
-  const major = amount.minor_units / 100
-  try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: amount.currency }).format(major)
-  } catch {
-    // Unknown currency code: fall back to a plain "<CODE> <amount>" form.
-    return `${amount.currency} ${major.toFixed(2)}`
-  }
-}
 
 export interface DeliveryQuoteLineProps extends UseDeliveryQuoteOptions {
   /** Rendered while the first quote is loading. */
@@ -28,6 +18,8 @@ export interface DeliveryQuoteLineProps extends UseDeliveryQuoteOptions {
   unavailableLabel?: ReactNode
   /** Custom renderer for the chosen option; overrides the default line. */
   renderChosen?: (chosen: QuoteOption) => ReactNode
+  /** How the price is written; defaults to `formatPrice` ("KES 260"). */
+  formatMoney?: (amount: Money) => string
 }
 
 /**
@@ -52,7 +44,7 @@ export function DeliveryQuoteLine(props: DeliveryQuoteLineProps): ReactNode {
   if (props.renderChosen) return <>{props.renderChosen(chosen)}</>
   return (
     <span className="mitumba-delivery-quote">
-      Delivery: {formatMoney(chosen.price)} <span className="mitumba-delivery-quote__carrier">via {chosen.carrier_name}</span>
+      Delivery: {(props.formatMoney ?? formatPrice)(chosen.price)} <span className="mitumba-delivery-quote__carrier">via {chosen.carrier_name}</span>
     </span>
   )
 }

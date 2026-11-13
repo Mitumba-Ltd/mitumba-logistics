@@ -4,6 +4,7 @@ import { MitumbaLogistics } from './client'
 import {
   checkoutDeliveries,
   etaLabel,
+  formatPrice,
   isQuoteExpired,
   methodChoices,
   methodLabel,
@@ -63,11 +64,29 @@ describe('labels', () => {
   })
 
   it('formats ETAs', () => {
-    expect(etaLabel({ min_days: 0, max_days: 1 })).toBe('Same day')
+    expect(etaLabel({ min_days: 0, max_days: 1 })).toBe('Within 1 day')
     expect(etaLabel({ min_days: 0, max_days: 0 })).toBe('Same day')
     expect(etaLabel({ min_days: 1, max_days: 1 })).toBe('1 day')
     expect(etaLabel({ min_days: 3, max_days: 3 })).toBe('3 days')
     expect(etaLabel({ min_days: 2, max_days: 4 })).toBe('2–4 days')
+  })
+})
+
+describe('formatPrice', () => {
+  it('writes whole amounts without decimals, and decimals only when there are any', () => {
+    expect(formatPrice({ currency: 'KES', minor_units: 26_000 })).toBe('KES 260')
+    expect(formatPrice({ currency: 'KES', minor_units: 26_050 })).toBe('KES 260.50')
+    expect(formatPrice({ currency: 'KES', minor_units: 130_000 })).toBe('KES 1,300')
+    expect(formatPrice({ currency: 'KES', minor_units: 0 })).toBe('KES 0')
+  })
+
+  it("uses the currency's own decimals, and two for a code the runtime does not know", () => {
+    expect(formatPrice({ currency: 'UGX', minor_units: 5_000 })).toBe('UGX 5,000')
+    expect(formatPrice({ currency: 'ZZZ', minor_units: 1_234 })).toBe('ZZZ 12.34')
+  })
+
+  it('groups digits for the locale given', () => {
+    expect(formatPrice({ currency: 'KES', minor_units: 12_345_600 }, 'de-DE')).toBe('KES 123.456')
   })
 })
 

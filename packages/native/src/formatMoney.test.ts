@@ -3,9 +3,8 @@ import { formatMoney } from './formatMoney'
 
 describe('formatMoney', () => {
   it('formats a known currency from minor units', () => {
-    const out = formatMoney({ currency: 'KES', minor_units: 35_000 })
-    // Locale-dependent symbol/placement, but it must contain the major amount.
-    expect(out).toMatch(/350/)
+    expect(formatMoney({ currency: 'KES', minor_units: 35_000 })).toBe('KES 350')
+    expect(formatMoney({ currency: 'KES', minor_units: 35_050 })).toBe('KES 350.50')
   })
 
   it('falls back to "<CODE> <amount>" for a structurally-invalid currency code', () => {
@@ -14,6 +13,6 @@ describe('formatMoney', () => {
   })
 
   it('formats zero via the fallback for an invalid code', () => {
-    expect(formatMoney({ currency: 'XX', minor_units: 0 })).toBe('XX 0.00')
+    expect(formatMoney({ currency: 'XX', minor_units: 0 })).toBe('XX 0')
   })
 })

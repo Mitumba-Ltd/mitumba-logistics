@@ -1,13 +1,9 @@
+import { formatPrice } from '@mitumbadotafrica/logistics'
+
 /**
- * Format a Money as a localised currency string, falling back to a plain
- * "<CODE> <amount>" form for a currency code Intl does not recognise (markets
- * and currencies are open by contract, so an unknown code must not throw).
+ * Format a Money the way the pickers write prices: the currency code, then the amount, with decimals
+ * only when it has any ("KES 260", "KES 260.50"). An unknown currency code never throws.
  */
 export function formatMoney(amount: { currency: string; minor_units: number }): string {
-  const major = amount.minor_units / 100
-  try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: amount.currency }).format(major)
-  } catch {
-    return `${amount.currency} ${major.toFixed(2)}`
-  }
+  return formatPrice(amount)
 }

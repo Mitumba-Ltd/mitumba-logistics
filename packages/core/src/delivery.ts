@@ -66,9 +66,35 @@ export function unavailableLabel(reason: string | undefined, overrides: Partial<
 
 /** "Same day", "1 day", "2–4 days". */
 export function etaLabel(eta: { min_days: number; max_days: number }): string {
-  if (eta.max_days <= 1 && eta.min_days === 0) return 'Same day'
+  if (eta.max_days === 0) return 'Same day'
+  if (eta.min_days === 0 && eta.max_days === 1) return 'Within 1 day'
   if (eta.min_days === eta.max_days) return `${eta.max_days} ${eta.max_days === 1 ? 'day' : 'days'}`
   return `${eta.min_days}–${eta.max_days} days`
+}
+
+/** Fraction digits a currency is written with (2 for KES, 0 for UGX); 2 when the runtime does not know it. */
+function currencyDigits(currency: string): number {
+  try {
+    return new Intl.NumberFormat('en', { style: 'currency', currency }).resolvedOptions().maximumFractionDigits ?? 2
+  } catch {
+    return 2
+  }
+}
+
+/**
+ * A price as a buyer reads it: the currency code, then the amount with grouping, and decimals
+ * only when it has any. `{ currency: 'KES', minor_units: 26_000 }` reads "KES 260";
+ * `26_050` reads "KES 260.50". The code always leads, so a price never reads as another currency.
+ */
+export function formatPrice(amount: { currency: string; minor_units: number }, locale?: string): string {
+  const digits = currencyDigits(amount.currency)
+  const major = amount.minor_units / 10 ** digits
+  const whole = Number.isInteger(major)
+  const number = new Intl.NumberFormat(locale ?? 'en', {
+    minimumFractionDigits: whole ? 0 : digits,
+    maximumFractionDigits: whole ? 0 : digits,
+  }).format(major)
+  return `${amount.currency} ${number}`
 }
 
 /** Has an option's quote stopped being claimable? Re-quote before checkout if so. */

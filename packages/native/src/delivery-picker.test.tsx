@@ -39,7 +39,7 @@ describe('native BasketDeliveryPicker', () => {
     expect(screen.getByRole('radiogroup', { name: 'Shop One' })).toBeDefined()
     const methods = screen.getAllByRole('radio')
     expect(methods.map((m) => m.getAttribute('aria-checked'))).toEqual(['false', 'false'])
-    expect(methods[1]!.getAttribute('aria-label')).toMatch(/Same-day delivery, .*Same day, via Uber Direct/)
+    expect(methods[1]!.getAttribute('aria-label')).toBe('Same-day delivery, KES 520, Within 1 day, via Uber Direct')
     fireEvent.click(methods[0]!)
     expect(screen.getByTestId('picked').textContent).toBe('dq_h2')
     expect(screen.getByRole('radiogroup', { name: 'Choose a pickup point' })).toBeDefined()
@@ -61,6 +61,15 @@ describe('native BasketDeliveryPicker', () => {
     expect(screen.getByText('card h1 true')).toBeDefined()
     render(<BasketDeliveryPicker basket={{ store_id: 's', status: 'unavailable', options: [] }} value={null} onChange={() => {}} />)
     expect(screen.getByText('Delivery is unavailable for this shop.')).toBeDefined()
+  })
+})
+
+describe('native BasketDeliveryPicker prices', () => {
+  it("takes the host's formatter, also for the hubs, and can hide the carrier", () => {
+    render(<BasketDeliveryPicker basket={basket} value="dq_h1" onChange={() => {}} showCarrier={false} formatMoney={(m) => `Sh ${m.minor_units / 100}`} />)
+    const methods = screen.getAllByRole('radio')
+    expect(methods[0]!.getAttribute('aria-label')).toBe('Pickup point, from Sh 250')
+    expect(screen.getByRole('radio', { name: /Kondele/ }).getAttribute('aria-label')).toContain('Sh 270')
   })
 })
 

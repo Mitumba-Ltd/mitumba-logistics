@@ -1,6 +1,7 @@
 import { useId, type ReactNode } from 'react'
 import {
   etaLabel,
+  formatPrice,
   methodChoices,
   methodLabel,
   unavailableLabel,
@@ -17,14 +18,8 @@ import {
  * shown as metadata only.
  */
 
-function formatMoney(amount: Money): string {
-  const major = amount.minor_units / 100
-  try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: amount.currency }).format(major)
-  } catch {
-    return `${amount.currency} ${major.toFixed(2)}`
-  }
-}
+/** How a picker writes a price; the default is {@link formatPrice} ("KES 260"). */
+export type PriceFormatter = (amount: Money) => string
 
 export interface PickupHubPickerProps {
   /** One method's options; each carries its `hub`. */
@@ -35,11 +30,14 @@ export interface PickupHubPickerProps {
   legend?: ReactNode
   /** Custom content per hub (e.g. distance, a map pin); defaults to name, address and hours. */
   renderHub?: (option: BasketQuoteOption) => ReactNode
+  /** How prices are written; defaults to {@link formatPrice}. */
+  formatMoney?: PriceFormatter
 }
 
 /** A list of pickup hubs to choose from, each with its own price. */
 export function PickupHubPicker(props: PickupHubPickerProps): ReactNode {
   const name = useId()
+  const format = props.formatMoney ?? formatPrice
   return (
     <fieldset className="mitumba-hub-picker">
       <legend className="mitumba-hub-picker__legend">{props.legend ?? 'Choose a pickup point'}</legend>
@@ -61,7 +59,7 @@ export function PickupHubPicker(props: PickupHubPickerProps): ReactNode {
               {option.hub?.opening_hours ? (
                 <span className="mitumba-hub-picker__hours"> · {option.hub.opening_hours}</span>
               ) : null}{' '}
-              <span className="mitumba-hub-picker__price">{formatMoney(option.price)}</span>
+              <span className="mitumba-hub-picker__price">{format(option.price)}</span>
             </span>
           )}
         </label>
@@ -80,6 +78,15 @@ export interface BasketDeliveryPickerProps {
   methodLabels?: Partial<Record<string, string>>
   unavailableLabels?: Partial<Record<string, string>>
   renderHub?: PickupHubPickerProps['renderHub']
+  /** How prices are written; defaults to {@link formatPrice}. */
+  formatMoney?: PriceFormatter
+  /** Show the partner's name ("via …") beside each method. Defaults to true. */
+  showCarrier?: boolean
+}
+
+/** "from " only when a method's options differ in price: one price needs no hedge. */
+function fromPrefix(choice: { options: BasketQuoteOption[]; cheapest: BasketQuoteOption }): string {
+  return choice.options.some((option) => option.price.minor_units !== choice.cheapest.price.minor_units) ? 'from ' : ''
 }
 
 /**
@@ -89,6 +96,7 @@ export interface BasketDeliveryPickerProps {
  */
 export function BasketDeliveryPicker(props: BasketDeliveryPickerProps): ReactNode {
   const name = useId()
+  const format = props.formatMoney ?? formatPrice
   const { basket } = props
   const choices = methodChoices(basket)
 
@@ -119,19 +127,22 @@ export function BasketDeliveryPicker(props: BasketDeliveryPickerProps): ReactNod
               />
               <span className="mitumba-delivery-picker__label">{methodLabel(choice.method, props.methodLabels)}</span>{' '}
               <span className="mitumba-delivery-picker__price">
-                {choice.options.length > 1 ? 'from ' : ''}
-                {formatMoney(choice.cheapest.price)}
+                {fromPrefix(choice)}
+                {format(choice.cheapest.price)}
               </span>
               {choice.cheapest.eta ? (
                 <span className="mitumba-delivery-picker__eta"> · {etaLabel(choice.cheapest.eta)}</span>
               ) : null}{' '}
-              <span className="mitumba-delivery-picker__carrier">via {choice.cheapest.carrier_name}</span>
+              {props.showCarrier === false ? null : (
+                <span className="mitumba-delivery-picker__carrier">via {choice.cheapest.carrier_name}</span>
+              )}
             </label>
             {selected && choice.needsHub ? (
               <PickupHubPicker
                 options={choice.options}
                 value={props.value}
                 onChange={props.onChange}
+                formatMoney={format}
                 {...(props.renderHub ? { renderHub: props.renderHub } : {})}
               />
             ) : null}
