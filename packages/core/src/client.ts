@@ -1,13 +1,19 @@
 import type {
   BasketQuoteRequest,
   BasketQuoteResponse,
+  BuyerOrderParcelView,
+  DeliverForMeOffer,
   ListingPackage,
+  MarkParcelReadyInput,
   MarketsResponse,
+  OrderParcelView,
   PackageSize,
   QuoteRequest,
   QuoteResponse,
   CreateParcelResponse,
   ParcelView,
+  RecordCounterHandoverInput,
+  ShopOrderParcelView,
   StoreOrigin,
   StoreOriginInput,
 } from '@mitumbadotafrica/logistics-contract'
@@ -113,5 +119,47 @@ export class MitumbaLogistics {
       { package_size: packageSize },
       options,
     )
+  }
+
+  /**
+   * An order's parcel. The shop (the seller, or a team member who may read orders) gets the
+   * handover; the buyer gets their own destination. Opens the parcel if the order is paid and it
+   * has not opened yet. Errors: 404 `order_not_found` / `parcel_not_found`.
+   */
+  async getOrderParcel(orderId: string, options?: RequestOptions): Promise<OrderParcelView> {
+    return this.http.get<OrderParcelView>(`/logistics/orders/${encodeURIComponent(orderId)}/parcel`, options)
+  }
+
+  /**
+   * Shop: whether a rider can collect a point-method parcel from the stall, the fee, and what the
+   * shop is paid after it. Errors: 403 `forbidden` for a member who may not fulfil orders.
+   */
+  async getDeliverForMeOffer(parcelId: string, options?: RequestOptions): Promise<DeliverForMeOffer> {
+    return this.http.get<DeliverForMeOffer>(`/logistics/parcels/${encodeURIComponent(parcelId)}/deliver-for-me`, options)
+  }
+
+  /**
+   * Shop: the parcel is ready. A point method needs `first_mile`; for deliver for me pass the fee
+   * shown as `expected_fee_minor`. Errors (409): `parcel_not_awaiting_handover`, `already_ready`,
+   * `deliver_for_me_unavailable` (with `reason`), `fee_changed` (read it with `feeChangedOf`);
+   * (400) `first_mile_required`, `collected_at_stall`; (502/503) a partner booking failed.
+   */
+  async markParcelReady(parcelId: string, input: MarkParcelReadyInput = {}, options?: RequestOptions): Promise<ShopOrderParcelView> {
+    return this.http.post<ShopOrderParcelView>(`/logistics/parcels/${encodeURIComponent(parcelId)}/ready`, input, options)
+  }
+
+  /**
+   * Shop: record a counter partner's handover, with its waybill and the fare paid. Errors (409):
+   * `handover_recorded_by_carrier` (an API partner records its own), `not_ready`, `already_handed_over`.
+   */
+  async recordCounterHandover(parcelId: string, input: RecordCounterHandoverInput, options?: RequestOptions): Promise<ShopOrderParcelView> {
+    return this.http.post<ShopOrderParcelView>(`/logistics/parcels/${encodeURIComponent(parcelId)}/handover`, input, options)
+  }
+
+  /**
+   * Buyer: the parcel arrived. Errors: 409 `parcel_not_in_transit` (with the current `status`).
+   */
+  async confirmParcelReceived(parcelId: string, options?: RequestOptions): Promise<BuyerOrderParcelView> {
+    return this.http.post<BuyerOrderParcelView>(`/logistics/parcels/${encodeURIComponent(parcelId)}/received`, {}, options)
   }
 }
