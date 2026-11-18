@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { MitumbaLogistics } from './client'
-import { LogisticsError } from './errors'
+import { LogisticsError, feeChangedOf } from './errors'
 import { pollParcel } from './polling'
 import type { ParcelView } from '@mitumbadotafrica/logistics-contract'
 
@@ -178,5 +178,77 @@ describe('the default fetch', () => {
     } finally {
       vi.unstubAllGlobals()
     }
+  })
+})
+
+describe("an order's parcel", () => {
+  const view = {
+    version: 1,
+    parcel_id: 'pcl_1',
+    order_id: 'order-1',
+    status: 'awaiting_dropoff',
+    method: 'pickup_point',
+    carrier: 'pickup_mtaani',
+    carrier_name: 'Pickup Mtaani',
+    tier: 'api',
+    tracking: { tracking_number: null, tracking_url: null, tracking_website: null },
+    eta: null,
+    destination: { kind: 'point', name: 'Kisumu Central', address: null },
+    updated_at: 'now',
+    handover: { deadline: 'soon', collected_at_stall: false, origin_point: null, ready: false, first_mile: null, counter_receipt: null },
+  }
+
+  function client(status = 200, body: unknown = view) {
+    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse(status, body))
+    return { fetchImpl, client: new MitumbaLogistics({ fetch: fetchImpl, baseUrl: 'https://api.test' }) }
+  }
+
+  it("reads the order's parcel and the deliver-for-me offer", async () => {
+    const parcel = client()
+    expect((await parcel.client.getOrderParcel('order 1')).parcel_id).toBe('pcl_1')
+    expect(parcel.fetchImpl.mock.calls[0]?.[0]).toBe('https://api.test/logistics/orders/order%201/parcel')
+
+    const offer = client(200, { offered: false, reason: 'stall_location_missing', item_amount: { currency: 'KES', minor_units: 1 } })
+    expect(await offer.client.getDeliverForMeOffer('pcl_1')).toMatchObject({ offered: false, reason: 'stall_location_missing' })
+    expect(offer.fetchImpl.mock.calls[0]?.[0]).toBe('https://api.test/logistics/parcels/pcl_1/deliver-for-me')
+  })
+
+  it('marks the parcel ready, with or without a first mile', async () => {
+    const ready = client()
+    await ready.client.markParcelReady('pcl_1', { first_mile: 'deliver_for_me', expected_fee_minor: 25_000 })
+    const [url, init] = ready.fetchImpl.mock.calls[0]!
+    expect(url).toBe('https://api.test/logistics/parcels/pcl_1/ready')
+    expect(init?.method).toBe('POST')
+    expect(JSON.parse(String(init?.body))).toEqual({ first_mile: 'deliver_for_me', expected_fee_minor: 25_000 })
+
+    const door = client()
+    await door.client.markParcelReady('pcl_1')
+    expect(JSON.parse(String(door.fetchImpl.mock.calls[0]?.[1]?.body))).toEqual({})
+  })
+
+  it('records a counter handover and the buyer receiving the parcel', async () => {
+    const handover = client()
+    await handover.client.recordCounterHandover('pcl_1', { waybill_number: 'WB-1', fare_minor: 30_000 })
+    expect(handover.fetchImpl.mock.calls[0]?.[0]).toBe('https://api.test/logistics/parcels/pcl_1/handover')
+    expect(JSON.parse(String(handover.fetchImpl.mock.calls[0]?.[1]?.body))).toEqual({ waybill_number: 'WB-1', fare_minor: 30_000 })
+
+    const received = client()
+    await received.client.confirmParcelReceived('pcl_1')
+    expect(received.fetchImpl.mock.calls[0]?.[0]).toBe('https://api.test/logistics/parcels/pcl_1/received')
+    expect(received.fetchImpl.mock.calls[0]?.[1]?.method).toBe('POST')
+  })
+
+  it('reads the new fee from a fee_changed refusal, and nothing from any other error', async () => {
+    const fee = { currency: 'KES', minor_units: 25_000 }
+    const payout = { currency: 'KES', minor_units: 95_000 }
+    const changed = client(409, { error: 'fee_changed', fee, payout_after_fee: payout })
+    const error = await changed.client.markParcelReady('pcl_1', { first_mile: 'deliver_for_me', expected_fee_minor: 20_000 }).catch((e: unknown) => e)
+    expect(feeChangedOf(error)).toEqual({ fee, payout_after_fee: payout })
+
+    const other = client(409, { error: 'already_ready' })
+    expect(feeChangedOf(await other.client.markParcelReady('pcl_1').catch((e: unknown) => e))).toBeNull()
+    const malformed = client(409, { error: 'fee_changed', fee: { currency: 'KES', minor_units: -5 } })
+    expect(feeChangedOf(await malformed.client.markParcelReady('pcl_1').catch((e: unknown) => e))).toBeNull()
+    expect(feeChangedOf(new Error('network'))).toBeNull()
   })
 })
