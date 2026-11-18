@@ -8,7 +8,7 @@
 export { MitumbaLogistics } from './client'
 export type { CreateParcelInput, ShipmentPartyInput } from './client'
 export { HttpClient } from './http'
-export { LogisticsError } from './errors'
+export { LogisticsError, feeChangedOf } from './errors'
 export { DEFAULT_BASE_URL } from './config'
 export type { MitumbaLogisticsConfig, RequestOptions } from './config'
 export { pollParcel } from './polling'
