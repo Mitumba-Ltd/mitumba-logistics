@@ -1,5 +1,15 @@
 # @mitumbadotafrica/logistics-contract
 
+## 0.3.0
+
+### Minor Changes
+
+- 2e4ebe5: Order parcel handover.
+
+  - Contract: `OrderParcelView` (`ShopOrderParcelView` with `handover`, `BuyerOrderParcelView`), `isShopParcelView`, `DeliverForMeOffer`, `MarkParcelReadyInput`, `RecordCounterHandoverInput`, and their zod schemas.
+  - Client: `getOrderParcel`, `getDeliverForMeOffer`, `markParcelReady`, `recordCounterHandover`, `confirmParcelReceived`.
+  - `LogisticsError.body` keeps the whole error body; `feeChangedOf(error)` reads the new fee from a `fee_changed` refusal.
+
 ## 0.2.0
 
 ### Minor Changes
